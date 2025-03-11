@@ -23,7 +23,7 @@ public class Amende {
     private boolean estPayee = false;
 
     @ManyToOne
-    @JoinColumn(name = "emprunteur_id", nullable = true) // Clé étrangère vers Emprunteur
+    @JoinColumn(name = "emprunteur_id", nullable = true)
     private Emprunteur emprunteur;
 
     // 🔹 Constructeurs

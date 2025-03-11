@@ -1,4 +1,4 @@
-package ca.cal.tp1.utilis
+package ca.cal.tp2.utilis
 
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration

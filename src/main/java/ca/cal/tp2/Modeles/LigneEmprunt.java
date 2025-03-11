@@ -13,7 +13,7 @@ public class LigneEmprunt {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "emprunt_id", nullable = false)
     private Emprunt emprunt;
 
