@@ -1,29 +1,16 @@
 <configuration>
+    <logger name="org.hibernate" level="ERROR" />
+    <logger name="org.hibernate.SQL" level="ERROR"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="ERROR"/>
 
-    <!-- Désactiver complètement les logs Hibernate -->
-    <logger name="org.hibernate" level="OFF" additivity="false">
-        <appender-ref ref="STDOUT"/>
-    </logger>
 
-    <!-- Désactiver les logs de la connexion JDBC -->
-    <logger name="org.hibernate.SQL" level="OFF"/>
-    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="OFF"/>
-    <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="OFF"/>
-    <logger name="org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator" level="OFF"/>
-    <logger name="org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl" level="OFF"/>
-    <logger name="org.hibernate.engine.jdbc.connections.internal.PooledConnections" level="OFF"/>
-    <logger name="org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl" level="OFF"/>
-
-    <!-- Configurer un appender pour éviter que les logs Hibernate s'affichent -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Désactiver tous les logs par défaut sauf les erreurs -->
     <root level="ERROR">
         <appender-ref ref="STDOUT"/>
     </root>
-
 </configuration>

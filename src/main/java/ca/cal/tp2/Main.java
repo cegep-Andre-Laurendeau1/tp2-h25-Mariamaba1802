@@ -1,5 +1,6 @@
 package ca.cal.tp2;
 
+import ca.cal.tp2.utilis.TcpServer;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
@@ -11,12 +12,16 @@ import ca.cal.tp2.Dao.UtilisateurDAO;
 import ca.cal.tp2.Service.EmprunteurService;
 import ca.cal.tp2.Service.PreposeService;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
+
+        TcpServer.createTcpServer();
         // ✅ Initialisation
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("hibernate2.ex1");
         EmpruntDAO empruntDAO = new EmpruntDAO();
