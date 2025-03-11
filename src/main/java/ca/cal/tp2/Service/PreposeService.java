@@ -161,4 +161,9 @@ public class PreposeService {
 
         System.out.println("💰 Toutes les amendes de " + emprunteur.getNom() + " " + emprunteur.getPrenom() + " ont été payées !");
     }
+
+    // ✅ Générer un rapport mensuel
+    public void genererRapport() {
+        empruntDAO.genererRapportMensuel();
+    }
 }
