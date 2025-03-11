@@ -1,7 +1,7 @@
 package ca.cal.tp2.Service;
 
-import ca.cal.tp1.DTOs.*;
-import ca.cal.tp1.Modeles.*;
+import ca.cal.tp2.DTOs.*;
+import ca.cal.tp2.Modeles.*;
 
 import java.util.ArrayList;
 import java.util.List;

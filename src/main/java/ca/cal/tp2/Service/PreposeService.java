@@ -36,4 +36,18 @@ public class PreposeService {
 
     }
 
+
+    public void inscrireEmprunteur(EmprunteurDTO emprunteurDTO) {
+        Emprunteur emprunteur = MapperService.versEmprunteurEntite(emprunteurDTO);
+        utilisateurDAO.ajouter(emprunteur);
+    }
+
+
+    public void inscrirePrepose(PreposeDTO preposeDTO) {
+        Prepose prepose = MapperService.versPreposeEntite(preposeDTO);
+        utilisateurDAO.ajouter(prepose);
+    }
+
+
+
 }
