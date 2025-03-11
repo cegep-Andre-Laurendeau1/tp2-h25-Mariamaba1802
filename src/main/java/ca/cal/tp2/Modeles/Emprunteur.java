@@ -1,16 +1,20 @@
 package ca.cal.tp2.Modeles;
 
-
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Entity
+@Table(name = "Emprunteur")
+@PrimaryKeyJoinColumn(name = "id")
 public class Emprunteur extends Utilisateur {
 
-  private List<Emprunt> emprunts = new ArrayList<>();
+    @OneToMany(mappedBy = "emprunteur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Emprunt> emprunts = new ArrayList<>();
 
-   private List<Amende> amendes = new ArrayList<>();
+    @OneToMany(mappedBy = "emprunteur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Amende> amendes = new ArrayList<>();
 
     // Constructeurs
     public Emprunteur() {}

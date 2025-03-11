@@ -1,24 +1,28 @@
 package ca.cal.tp2.Modeles;
 
-
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Entity
+@Table(name = "Emprunt")
 public class Emprunt {
 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    @Column(nullable = false)
     private LocalDate dateEmprunt;
 
-
+    @ManyToOne
+    @JoinColumn(name = "emprunteur_id", nullable = false)
     private Emprunteur emprunteur;
 
- private List<LigneEmprunt> lignesEmprunt = new ArrayList<>();
+    @OneToMany(mappedBy = "emprunt", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LigneEmprunt> lignesEmprunt = new ArrayList<>();
 
     // Constructeurs
     public Emprunt() {}

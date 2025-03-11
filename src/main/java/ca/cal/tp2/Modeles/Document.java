@@ -1,13 +1,18 @@
 package ca.cal.tp2.Modeles;
 
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "Document")
 public abstract class Document {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String titre;
 
     private LocalDate dateParution;

@@ -1,27 +1,30 @@
 package ca.cal.tp2.Modeles;
 
-
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-
-
+@Entity
+@Table(name = "Amende")
 public class Amende {
 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
     private Long id;
 
-
+    @Column(nullable = false, precision = 10, scale = 2) // DECIMAL(10,2)
     private BigDecimal montant;
 
-
+    @Column(nullable = false)
     private LocalDate dateGeneration;
 
-
+    @Column(nullable = false)
     private boolean estPayee = false;
 
-  private Emprunteur emprunteur;
+    @ManyToOne
+    @JoinColumn(name = "emprunteur_id", nullable = true) // Clé étrangère vers Emprunteur
+    private Emprunteur emprunteur;
 
     // 🔹 Constructeurs
     public Amende() {}

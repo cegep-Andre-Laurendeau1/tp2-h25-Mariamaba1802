@@ -1,11 +1,14 @@
 package ca.cal.tp2.Modeles;
 
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-
+@Entity
+@Table(name = "DVD")
+@PrimaryKeyJoinColumn(name = "id")
 public class DVD extends Document {
-
+    @Column(nullable = false)
     private String realisateur;
 
     private int duree;

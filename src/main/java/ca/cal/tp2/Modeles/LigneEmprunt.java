@@ -1,23 +1,31 @@
 package ca.cal.tp2.Modeles;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
-
+@Entity
+@Table(name = "LigneEmprunt")
 public class LigneEmprunt {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "emprunt_id", nullable = false)
     private Emprunt emprunt;
 
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "document_id", nullable = false)
     private Document document;
 
-
+    @Column(name = "dateRetour", nullable = false)
     private LocalDate dateRetour;
 
-
+    @Column(name = "dateRetourEffectif")
     private LocalDate dateRetourEffectif;
 
     public LigneEmprunt() {}

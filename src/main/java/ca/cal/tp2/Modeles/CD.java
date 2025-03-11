@@ -1,10 +1,14 @@
 package ca.cal.tp2.Modeles;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
-
+@Entity
+@Table(name = "CD")
+@PrimaryKeyJoinColumn(name = "id")
 public class CD extends Document {
-
+    @Column(nullable = false)
     private String artiste;
 
     private int duree;

@@ -1,14 +1,17 @@
 package ca.cal.tp2.Modeles;
 
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-
+@Entity
+@Table(name = "Livre")
+@PrimaryKeyJoinColumn(name = "id")
 public class Livre extends Document {
-
+    @Column(nullable = false)
     private String auteur;
 
-
+    @Column(nullable = false)
     private String editeur;
 
     private int nombreDePages;

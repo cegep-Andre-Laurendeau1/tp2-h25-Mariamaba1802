@@ -1,13 +1,21 @@
 package ca.cal.tp2.Modeles;
 
+import jakarta.persistence.*;
+
+
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "Utilisateur")
 public abstract class Utilisateur {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    @Column(nullable = false, length = 100)
     private String nom;
 
-
+    @Column(nullable = false, length = 100)
     private String prenom;
 
     // Constructeurs
