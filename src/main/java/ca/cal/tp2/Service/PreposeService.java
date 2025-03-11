@@ -49,5 +49,50 @@ public class PreposeService {
     }
 
 
+    public void gererEmprunt(EmprunteurDTO emprunteurDTO, List<DocumentDTO> documentsDTO) {
+
+        Emprunteur emprunteur = utilisateurDAO.trouverEmprunteurParNomPrenom(
+                emprunteurDTO.getNom(), emprunteurDTO.getPrenom());
+
+        if (emprunteur == null) {
+            System.out.println("❌ Emprunteur introuvable !");
+            return;
+        }
+
+        if (aDesAmendesImpayees(emprunteur)) {
+            System.out.println("❌ L'emprunteur a des amendes impayées. Impossible d'emprunter.");
+            return;
+        }
+
+        List<Document> documentsDisponibles = new ArrayList<>();
+
+        for (DocumentDTO documentDTO : documentsDTO) {
+            Document document = documentDAO.rechercherDocumentParTitre(documentDTO.getTitre());
+            if (document == null || document.getNbExemplaire() <= 0) {
+                System.out.println("❌ Le document '" + documentDTO.getTitre() + "' n'est pas disponible.");
+                return;
+            }
+            documentsDisponibles.add(document);
+        }
+
+        // Ajoute seulement si tout est valide
+        Emprunt nouvelEmprunt = new Emprunt(emprunteur);
+        empruntDAO.ajouter(nouvelEmprunt);
+
+        for (Document document : documentsDisponibles) {
+            empruntDAO.ajouterLigneEmprunt(document, nouvelEmprunt.getId());
+            document.setNbExemplaire(document.getNbExemplaire() - 1);
+            documentDAO.mettreAJour(document);
+        }
+
+        System.out.println("✅ Emprunt enregistré avec succès.");
+    }
+
+
+    private boolean aDesAmendesImpayees(Emprunteur emprunteur) {
+        List<Amende> amendes = amendeDAO.trouverAmendesParEmprunteur(emprunteur.getId());
+        return amendes.stream().anyMatch(amende -> !amende.EstPayee());
+    }
+
 
 }
