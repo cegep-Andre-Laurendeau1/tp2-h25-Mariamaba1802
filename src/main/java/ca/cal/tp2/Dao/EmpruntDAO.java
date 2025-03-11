@@ -1,7 +1,7 @@
 package ca.cal.tp2.Dao;
 
-import ca.cal.tp1.Exceptions.ErreurPersistenceException;
-import ca.cal.tp1.Modeles.*;
+import ca.cal.tp2.Exceptions.ErreurPersistenceException;
+import ca.cal.tp2.Modeles.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
