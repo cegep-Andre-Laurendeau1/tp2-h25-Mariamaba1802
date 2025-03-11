@@ -141,5 +141,24 @@ public class PreposeService {
     }
 
 
+    public void gererAmendes(EmprunteurDTO emprunteurDTO) {
+        Emprunteur emprunteur = utilisateurDAO.trouverEmprunteurParNomPrenom(emprunteurDTO.getNom(), emprunteurDTO.getPrenom());
 
+        if (emprunteur == null) {
+            System.out.println("❌ Emprunteur introuvable !");
+            return;
+        }
+
+        // 🔹 Trouver toutes les amendes non payées de l'emprunteur
+        List<Amende> amendes = amendeDAO.trouverAmendesParEmprunteur(emprunteur.getId());
+
+        if (amendes.isEmpty()) {
+            System.out.println("✅ Aucune amende à payer pour " + emprunteur.getNom() + " " + emprunteur.getPrenom());
+            return;
+        }
+
+        amendeDAO.payerAmende(emprunteur.getId());
+
+        System.out.println("💰 Toutes les amendes de " + emprunteur.getNom() + " " + emprunteur.getPrenom() + " ont été payées !");
+    }
 }

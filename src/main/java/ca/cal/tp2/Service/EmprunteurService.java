@@ -51,4 +51,10 @@ public class EmprunteurService {
         return empruntDAO.consulterCompte(emprunteur);
     }
 
+    // ✅ L'emprunteur paie ses amendes via le préposé
+    public void payerAmende(EmprunteurDTO emprunteurDTO) {
+        preposeService.gererAmendes(emprunteurDTO);
+    }
+
+
 }
