@@ -32,5 +32,14 @@ public class EmprunteurService {
     public void retournerDocument(EmprunteurDTO emprunteurDTO, DocumentDTO documentDTO) {
         preposeService.gestionRetourDocument(emprunteurDTO, documentDTO);
     }
+    // ✅ Recherche un document dans la bibliothèque
+    public DocumentDTO rechercherDocument(String critere) {
+        List<Document> documents = empruntDAO.rechercherDocumentsParCritere(critere);
+        if (documents.isEmpty()) {
+            System.out.println("❌ Aucun document trouvé pour le critère : " + critere);
+            return null;
+        }
+        return MapperService.versDocumentDTO(documents.get(0)); // Retourne le premier document trouvé
+    }
 
 }
