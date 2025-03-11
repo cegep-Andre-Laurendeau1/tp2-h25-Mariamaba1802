@@ -29,5 +29,8 @@ public class EmprunteurService {
     }
 
     // ✅ L'emprunteur retourne un document
+    public void retournerDocument(EmprunteurDTO emprunteurDTO, DocumentDTO documentDTO) {
+        preposeService.gestionRetourDocument(emprunteurDTO, documentDTO);
+    }
 
 }
