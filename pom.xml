@@ -12,11 +12,9 @@
         <kotlin.version>2.1.10</kotlin.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.5.3</version>
-        </dependency>
+
+
+
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
