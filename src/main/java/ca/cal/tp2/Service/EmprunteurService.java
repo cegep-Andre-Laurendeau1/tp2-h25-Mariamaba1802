@@ -42,4 +42,13 @@ public class EmprunteurService {
         return MapperService.versDocumentDTO(documents.get(0)); // Retourne le premier document trouvé
     }
 
+    // ✅ Consulter l'état du compte d'un emprunteur
+    public String consulterCompte(EmprunteurDTO emprunteurDTO) {
+        Emprunteur emprunteur = utilisateurDAO.trouverEmprunteurParNomPrenom(emprunteurDTO.getNom(), emprunteurDTO.getPrenom());
+        if (emprunteur == null) {
+            return "❌ Aucun emprunteur trouvé.";
+        }
+        return empruntDAO.consulterCompte(emprunteur);
+    }
+
 }
