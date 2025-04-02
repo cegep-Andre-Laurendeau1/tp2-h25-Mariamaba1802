@@ -7,7 +7,9 @@ import ca.cal.tp2.Dao.AmendeDAO;
 import ca.cal.tp2.Dao.DocumentDAO;
 import ca.cal.tp2.Dao.EmpruntDAO;
 import ca.cal.tp2.Dao.UtilisateurDAO;
+import ca.cal.tp2.Exceptions.*;
 import ca.cal.tp2.Modeles.*;
+import java.sql.SQLException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,11 +32,17 @@ public class PreposeService {
         this.amendeDAO = amendeDAO;
     }
 
-    public void ajouterDocument(DocumentDTO documentDTO) {
-        Document document = MapperService.versDocumentEntite(documentDTO);
-        documentDAO.ajouter(document);
+    public void ajouterDocument(DocumentDTO documentDTO) throws ErreurPersistenceException, DocumentExisteDejaException {
+        try {
+            Document document = MapperService.versDocumentEntite(documentDTO);
+            documentDAO.ajouter(document);
 
+        } catch (DocumentExisteDejaException e) {
+            // Gérer spécifiquement l'exception d'unicité
+            throw new ErreurPersistenceException("Document  '" + documentDTO.getTitre() + " Existe Deja ",e);
+        }
     }
+
 
 
     public void inscrireEmprunteur(EmprunteurDTO emprunteurDTO) {
@@ -49,43 +57,39 @@ public class PreposeService {
     }
 
 
-    public void gererEmprunt(EmprunteurDTO emprunteurDTO, List<DocumentDTO> documentsDTO) {
-
+    public void emprunterDocument(EmprunteurDTO emprunteurDTO, List<DocumentDTO> documentsDTO) throws
+            DocumentExisteDejaException,
+            EmprunteurExistePas,AmendeImpaye {
         Emprunteur emprunteur = utilisateurDAO.trouverEmprunteurParNomPrenom(
                 emprunteurDTO.getNom(), emprunteurDTO.getPrenom());
 
         if (emprunteur == null) {
-            System.out.println("❌ Emprunteur introuvable !");
-            return;
+            throw new EmprunteurExistePas("❌ Emprunteur introuvable !");
         }
 
         if (aDesAmendesImpayees(emprunteur)) {
-            System.out.println("❌ L'emprunteur a des amendes impayées. Impossible d'emprunter.");
-            return;
+            throw new AmendeImpaye("❌ L'emprunteur a des amendes impayées. Impossible d'emprunter.");
         }
 
         List<Document> documentsDisponibles = new ArrayList<>();
 
         for (DocumentDTO documentDTO : documentsDTO) {
             Document document = documentDAO.rechercherDocumentParTitre(documentDTO.getTitre());
-            if (document == null || document.getNbExemplaire() <= 0) {
-                System.out.println("❌ Le document '" + documentDTO.getTitre() + "' n'est pas disponible.");
-                return;
+            if (document == null ) {
+                throw new DocumentExistePas("❌ Le document '" + documentDTO.getTitre() + "' existe pas.");
+            }
+            if ( !empruntDAO.estDisponible(document) ) {
+                throw new DocumentIndisponible("❌ Le document '" + documentDTO.getTitre() + "' n'est pas disponible.");
             }
             documentsDisponibles.add(document);
         }
-
         // Ajoute seulement si tout est valide
         Emprunt nouvelEmprunt = new Emprunt(emprunteur);
         empruntDAO.ajouter(nouvelEmprunt);
-
         for (Document document : documentsDisponibles) {
-            empruntDAO.ajouterLigneEmprunt(document, nouvelEmprunt.getId());
-            document.setNbExemplaire(document.getNbExemplaire() - 1);
-            documentDAO.mettreAJour(document);
-        }
+            empruntDAO.ajouterLigneEmprunt(document, nouvelEmprunt.getId());;
 
-        System.out.println("✅ Emprunt enregistré avec succès.");
+        }
     }
 
 
@@ -94,12 +98,17 @@ public class PreposeService {
         return amendes.stream().anyMatch(amende -> !amende.EstPayee());
     }
 
-    public void gestionRetourDocument(EmprunteurDTO emprunteurDTO, DocumentDTO documentDTO) {
+    public void retournerDocument(EmprunteurDTO emprunteurDTO, DocumentDTO documentDTO)throws   DocumentExisteDejaException,
+            EmprunteurExistePas, EmpruntExistePas {
         Emprunteur emprunteur = utilisateurDAO.trouverEmprunteurParNomPrenom(emprunteurDTO.getNom(), emprunteurDTO.getPrenom());
         Document document = documentDAO.rechercherDocumentParTitre(documentDTO.getTitre());
-        if (emprunteur == null || document == null) {
-            System.out.println("❌ ERREUR : Emprunteur ou document non trouvé !");
-            return;
+        if (emprunteur == null ) {
+            throw new EmprunteurExistePas("❌ ERREUR : Emprunteur  non trouvé !");
+
+        }
+        if (document == null) {
+            throw new DocumentExisteDejaException("❌ ERREUR : Document non trouvé !");
+
         }
 
         List<Emprunt> emprunts = empruntDAO.getEmpruntsParEmprunteur(emprunteur.getId());
@@ -114,20 +123,16 @@ public class PreposeService {
 
                     verifierRetardEtAjouterAmende(emprunteur, ligne);
 
-                    document.setNbExemplaire(document.getNbExemplaire() + 1);
-                    documentDAO.mettreAJour(document);
-
-                    System.out.println("✅ Retour du document enregistré.");
                     return;
                 }
             }
         }
 
-        System.out.println("❌ Aucun emprunt trouvé pour ce document !");
+       throw new EmpruntExistePas("❌ Aucun emprunt trouvé pour ce document !");
     }
 
     // ✅ Vérifier si un emprunteur a un retard et générer une amende
-    private void verifierRetardEtAjouterAmende(Emprunteur emprunteur, LigneEmprunt ligne) {
+    public void verifierRetardEtAjouterAmende(Emprunteur emprunteur, LigneEmprunt ligne) {
         LocalDate dateRetour = ligne.getDateRetour();
         LocalDate dateActuelle = LocalDate.now();
 
@@ -136,34 +141,33 @@ public class PreposeService {
             BigDecimal montantAmende = BigDecimal.valueOf(joursRetard).multiply(MONTANT_AMENDE_PAR_JOUR);
             Amende amende = new Amende(montantAmende, dateActuelle, emprunteur);
             amendeDAO.ajouter(amende);
-            System.out.println("⚠️ Amende de " + montantAmende + "$ ajoutée pour retard.");
+           // System.out.println("⚠️ Amende de " + montantAmende + "$ ajoutée pour retard.");
         }
     }
 
 
-    public void gererAmendes(EmprunteurDTO emprunteurDTO) {
+    public String payerAmendes(EmprunteurDTO emprunteurDTO)throws EmprunteurExistePas {
         Emprunteur emprunteur = utilisateurDAO.trouverEmprunteurParNomPrenom(emprunteurDTO.getNom(), emprunteurDTO.getPrenom());
 
         if (emprunteur == null) {
-            System.out.println("❌ Emprunteur introuvable !");
-            return;
+           throw  new  EmprunteurExistePas ("❌ Emprunteur introuvable !");
         }
 
-        // 🔹 Trouver toutes les amendes non payées de l'emprunteur
         List<Amende> amendes = amendeDAO.trouverAmendesParEmprunteur(emprunteur.getId());
 
         if (amendes.isEmpty()) {
-            System.out.println("✅ Aucune amende à payer pour " + emprunteur.getNom() + " " + emprunteur.getPrenom());
-            return;
+            return "✅ Aucune amende à payer pour " + emprunteur.getNom() + " " + emprunteur.getPrenom();
+
         }
 
         amendeDAO.payerAmende(emprunteur.getId());
 
-        System.out.println("💰 Toutes les amendes de " + emprunteur.getNom() + " " + emprunteur.getPrenom() + " ont été payées !");
+       return "💰 Toutes les amendes de " + emprunteur.getNom() + " " + emprunteur.getPrenom() + " ont été payées !";
     }
 
-    // ✅ Générer un rapport mensuel
-    public void genererRapport() {
-        empruntDAO.genererRapportMensuel();
+    public String genererRapport() {
+        return empruntDAO.genererRapportMensuel();
     }
+
+
 }

@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
-public class AmendeDAO implements DAO_hibernate<Amende> {
+public class AmendeDAO implements repository_parent<Amende> {
 
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("hibernate2.ex1");
 
@@ -45,16 +45,16 @@ public class AmendeDAO implements DAO_hibernate<Amende> {
         Query query = entityManager.createQuery(
                 "UPDATE Amende a SET a.estPayee = true WHERE a.emprunteur.id = :emprunteurId");
         query.setParameter("emprunteurId", emprunteurId);
-        int rowsUpdated = query.executeUpdate();
+      //  int rowsUpdated = query.executeUpdate();
 
         entityManager.getTransaction().commit();
         entityManager.close();
 
-        if (rowsUpdated > 0) {
-            System.out.println("✅ Amende payée avec succès !");
-        } else {
-            System.out.println("❌ Aucune amende trouvée pour cet emprunteur !");
-        }
+//        if (rowsUpdated > 0) {
+//            System.out.println("✅ Amende payée avec succès !");
+//        } else {
+//           throw  "❌ Aucune amende trouvée pour cet emprunteur !");
+//        }
     }
 
     // ✅ Trouver toutes les amendes d'un emprunteur spécifique
@@ -74,4 +74,7 @@ public class AmendeDAO implements DAO_hibernate<Amende> {
         return amendes;
     }
 
+
+
 }
+

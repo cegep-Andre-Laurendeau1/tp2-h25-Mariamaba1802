@@ -1,6 +1,6 @@
 package ca.cal.tp2.Dao;
 
-public interface DAO_hibernate<T> {
+public interface repository_parent<T> {
    void ajouter(T entity);
    void supprimer(T entity);
 }

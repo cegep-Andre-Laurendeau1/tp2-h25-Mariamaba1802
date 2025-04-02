@@ -12,7 +12,7 @@ public abstract class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String titre;
 
     private LocalDate dateParution;

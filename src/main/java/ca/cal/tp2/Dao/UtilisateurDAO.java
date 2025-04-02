@@ -10,7 +10,7 @@ import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 
-public class UtilisateurDAO implements DAO_hibernate<Utilisateur> {
+public class UtilisateurDAO implements repository_parent<Utilisateur> {
 
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("hibernate2.ex1");
 

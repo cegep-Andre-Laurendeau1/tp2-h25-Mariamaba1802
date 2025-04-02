@@ -6,8 +6,13 @@ import ca.cal.tp2.Dao.AmendeDAO;
 import ca.cal.tp2.Dao.DocumentDAO;
 import ca.cal.tp2.Dao.EmpruntDAO;
 import ca.cal.tp2.Dao.UtilisateurDAO;
+import ca.cal.tp2.Exceptions.DocumentExisteDejaException;
+import ca.cal.tp2.Exceptions.EmpruntExistePas;
+import ca.cal.tp2.Exceptions.EmprunteurExistePas;
+import ca.cal.tp2.Exceptions.RechercheDocumentExistePas;
 import ca.cal.tp2.Modeles.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class EmprunteurService {
@@ -23,38 +28,24 @@ public class EmprunteurService {
         this.amendeDAO = amendeDAO;
     }
 
-    // ✅ L'emprunteur demande à emprunter un document
-    public void emprunterDocument(EmprunteurDTO emprunteurDTO, List<DocumentDTO> documentsDTO) {
-        preposeService.gererEmprunt(emprunteurDTO, documentsDTO);
-    }
-
-    // ✅ L'emprunteur retourne un document
-    public void retournerDocument(EmprunteurDTO emprunteurDTO, DocumentDTO documentDTO) {
-        preposeService.gestionRetourDocument(emprunteurDTO, documentDTO);
-    }
     // ✅ Recherche un document dans la bibliothèque
-    public DocumentDTO rechercherDocument(String critere) {
+    public DocumentDTO rechercherDocument(String critere)throws RechercheDocumentExistePas {
         List<Document> documents = empruntDAO.rechercherDocumentsParCritere(critere);
         if (documents.isEmpty()) {
-            System.out.println("❌ Aucun document trouvé pour le critère : " + critere);
-            return null;
+            throw new RechercheDocumentExistePas ("❌ Aucun document trouvé pour le critère : " + critere);
         }
         return MapperService.versDocumentDTO(documents.get(0)); // Retourne le premier document trouvé
     }
 
     // ✅ Consulter l'état du compte d'un emprunteur
-    public String consulterCompte(EmprunteurDTO emprunteurDTO) {
+    public String consulterCompte(EmprunteurDTO emprunteurDTO)throws EmprunteurExistePas {
         Emprunteur emprunteur = utilisateurDAO.trouverEmprunteurParNomPrenom(emprunteurDTO.getNom(), emprunteurDTO.getPrenom());
         if (emprunteur == null) {
-            return "❌ Aucun emprunteur trouvé.";
+        throw new   EmprunteurExistePas ( "❌ Aucun emprunteur trouvé.");
         }
         return empruntDAO.consulterCompte(emprunteur);
     }
 
-    // ✅ L'emprunteur paie ses amendes via le préposé
-    public void payerAmende(EmprunteurDTO emprunteurDTO) {
-        preposeService.gererAmendes(emprunteurDTO);
-    }
 
 
 }
